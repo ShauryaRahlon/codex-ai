@@ -22,13 +22,21 @@ export class GeminiAnalyzer {
     const apiKey = await storage.get("gemini_api_key")
     if (!apiKey) {
       throw new Error(
-        "Gemini API key not found. Please set it in the extension popup."
+        "⚠️ API key not found! Please open the extension popup and add your Gemini API key first."
       )
     }
-    this.genAI = new GoogleGenerativeAI(apiKey)
-    this.model = this.genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp"
-    })
+
+    try {
+      this.genAI = new GoogleGenerativeAI(apiKey)
+      this.model = this.genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-exp"
+      })
+    } catch (error) {
+      console.error("Failed to initialize Gemini:", error)
+      throw new Error(
+        "❌ Failed to initialize AI. Please check your API key in the extension popup."
+      )
+    }
   }
 
   async analyzeCode(
@@ -49,6 +57,7 @@ ${code}
 
 Provide your analysis in the following JSON format (respond ONLY with valid JSON):
 {
+    only tell time and space complexity in big O notation with brief explanation if its a leetcode problem not on github
   "timeComplexity": "O(?) - brief explanation",
   "spaceComplexity": "O(?) - brief explanation",
   "optimizations": ["specific optimization 1", "specific optimization 2"],
@@ -71,10 +80,37 @@ Be specific and actionable. Focus on real improvements, not generic advice.`
       const jsonText = jsonMatch ? jsonMatch[1] || jsonMatch[0] : text
 
       return JSON.parse(jsonText.trim())
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gemini API error:", error)
+
+      // Provide more specific error messages
+      if (error.message?.includes("API_KEY_INVALID")) {
+        throw new Error(
+          "❌ Invalid API key! Please check your Gemini API key in the extension popup."
+        )
+      }
+
+      if (error.message?.includes("429") || error.message?.includes("quota")) {
+        throw new Error(
+          "⏰ API quota exceeded! Please wait a moment or check your Gemini API quota."
+        )
+      }
+
+      if (
+        error.message?.includes("network") ||
+        error.message?.includes("fetch")
+      ) {
+        throw new Error(
+          "🌐 Network error! Please check your internet connection and try again."
+        )
+      }
+
+      if (error instanceof SyntaxError) {
+        throw new Error("⚠️ Failed to parse AI response. Please try again.")
+      }
+
       throw new Error(
-        "Failed to analyze code. Check your API key and try again."
+        `❌ Analysis failed: ${error.message || "Unknown error. Please try again or check your API key."}`
       )
     }
   }

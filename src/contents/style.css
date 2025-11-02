@@ -1,9 +1,10 @@
-/* Tailwind-like reset for content scripts */
-* {
+/* Reset for content scripts to prevent conflicts */
+[data-plasmo-root] * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* Ensure our extension elements don't inherit GitHub/LeetCode styles */
 [data-plasmo-root] {
   all: initial;
   font-family:
@@ -12,40 +13,199 @@
     BlinkMacSystemFont,
     "Segoe UI",
     Roboto,
+    "Helvetica Neue",
+    Arial,
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animation for button hover */
+/* Ensure our elements are isolated from page styles */
+[data-plasmo-root] button,
+[data-plasmo-root] div,
+[data-plasmo-root] span,
+[data-plasmo-root] input {
+  all: unset;
+  box-sizing: border-box;
+}
+
+/* Re-apply necessary button styles */
+[data-plasmo-root] button {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+[data-plasmo-root] input {
+  display: block;
+  width: 100%;
+}
+
+/* Smooth animations */
 @keyframes slideIn {
   from {
-    max-width: 0;
+    opacity: 0;
+    transform: translateX(20px);
   }
   to {
-    max-width: 12rem;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Apply entrance animations */
+[data-plasmo-root] [class*="fixed"] {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Scrollbar styling */
+[data-plasmo-root] *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-plasmo-root] *::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 4px;
+}
+
+[data-plasmo-root] *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+[data-plasmo-root] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: padding-box;
+}
+
+/* Ensure high z-index for our elements */
+[data-plasmo-root] {
+  position: relative;
+  z-index: 99999;
+}
+
+/* Backdrop blur support */
+@supports (backdrop-filter: blur(10px)) {
+  [data-plasmo-root] [class*="backdrop-blur"] {
+    backdrop-filter: blur(10px);
   }
 }
 
 /* Smooth transitions */
-.transition-all {
-  transition-property: all;
+[data-plasmo-root] * {
+  transition-property: color, background-color, border-color, transform, opacity,
+    box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+  transition-duration: 150ms;
 }
 
-/* Scrollbar styling for review panel */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
+/* Disable transitions on animations that specify their own timing */
+[data-plasmo-root] [class*="animate-"],
+[data-plasmo-root] [class*="duration-"] {
+  transition: none;
 }
 
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: rgba(31, 41, 55, 0.5);
+/* Focus visible styles for accessibility */
+[data-plasmo-root] button:focus-visible,
+[data-plasmo-root] input:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.5);
-  border-radius: 4px;
+/* Prevent text selection on buttons */
+[data-plasmo-root] button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.7);
+/* Ensure proper text rendering */
+[data-plasmo-root] {
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Hide elements that shouldn't be visible */
+[data-plasmo-root] [hidden] {
+  display: none;
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+[data-plasmo-root] [class*="bg-gradient"] {
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
+}
+
+/* Shadow glow effect */
+[data-plasmo-root] .shadow-glow {
+  box-shadow:
+    0 0 20px rgba(99, 102, 241, 0.3),
+    0 0 40px rgba(99, 102, 241, 0.2),
+    0 0 60px rgba(99, 102, 241, 0.1);
+}
+
+/* Glass morphism effect */
+[data-plasmo-root] .glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure buttons are always clickable */
+[data-plasmo-root] button {
+  pointer-events: auto;
+}
+
+/* Prevent conflicts with page styles */
+[data-plasmo-root] {
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }

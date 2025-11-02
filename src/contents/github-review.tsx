@@ -47,7 +47,13 @@ const GithubReview = () => {
 
       if (scrapedData.length === 0) {
         throw new Error(
-          "No code found to analyze. Make sure you're on a PR with code changes."
+          "📝 No code found! Make sure you're on a GitHub PR page with code changes."
+        )
+      }
+
+      if (!scrapedData[0].code || scrapedData[0].code.trim().length < 10) {
+        throw new Error(
+          "📝 Code is too short or empty! The PR might not have enough code to analyze."
         )
       }
 
@@ -62,7 +68,8 @@ const GithubReview = () => {
 
       setAnalysis(result)
     } catch (err: any) {
-      setError(err.message || "Failed to analyze code")
+      console.error("Analysis error:", err)
+      setError(err.message || "❌ Failed to analyze code. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -75,12 +82,15 @@ const GithubReview = () => {
       {/* Floating Action Button */}
       <button
         onClick={analyzeCode}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all z-[9999] flex items-center gap-2 group"
-        style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
-        <Code className="w-6 h-6" />
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
-          Review Code
-        </span>
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-2xl shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 z-[9998] flex items-center gap-3 group hover:scale-105 border border-white/10"
+        style={{
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          padding: "14px 20px"
+        }}>
+        <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+          <Code className="w-5 h-5" />
+        </div>
+        <span className="font-semibold text-sm">Review Code</span>
       </button>
 
       {/* Review Panel */}

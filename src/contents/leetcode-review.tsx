@@ -41,7 +41,15 @@ const LeetCodeReview = () => {
       const scrapedData = DOMScraper.scrapeLeetCode()
 
       if (!scrapedData) {
-        throw new Error("No code found. Make sure you have code in the editor.")
+        throw new Error(
+          "📝 No code found! Make sure you have code in the LeetCode editor."
+        )
+      }
+
+      if (!scrapedData.code || scrapedData.code.trim().length < 10) {
+        throw new Error(
+          "📝 Code is too short or empty! Please write some code in the editor first."
+        )
       }
 
       const analyzer = new GeminiAnalyzer()
@@ -53,7 +61,8 @@ const LeetCodeReview = () => {
 
       setAnalysis(result)
     } catch (err: any) {
-      setError(err.message || "Failed to analyze code")
+      console.error("Analysis error:", err)
+      setError(err.message || "❌ Failed to analyze code. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -70,7 +79,7 @@ const LeetCodeReview = () => {
         style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
         <Code className="w-6 h-6" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
-          Review Code
+          Review Codes
         </span>
       </button>
 
